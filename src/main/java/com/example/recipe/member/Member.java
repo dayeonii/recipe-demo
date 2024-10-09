@@ -14,14 +14,19 @@ public class Member {
     private String phone;
     private Grade grade;
 
+    private int postCount;
+    private int commentCount;
+
     // 생성자
-    public Member(String id, String password, String name, String email, String phone, Grade grade) {
+    public Member(String id, String password, String name, String email, String phone, Grade grade, int postCount, int commentCount) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.grade = grade;
+        this.postCount = postCount;
+        this.commentCount = commentCount;
     }
 
     //Getter and Setter
@@ -71,5 +76,20 @@ public class Member {
 
     public void setGrade(Grade grade) {
         this.grade = grade;
+    }
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 }

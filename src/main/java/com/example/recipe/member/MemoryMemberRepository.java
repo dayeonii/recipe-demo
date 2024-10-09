@@ -18,8 +18,11 @@ public class MemoryMemberRepository implements MemberRepository {
     //Member 객체로부터 정보를 불러와서 sql 쿼리에 변수 적용 후 쿼리 요청으로 사용자 저장
     @Override
     public void save(Member member) {
-        String sql = "INSERT INTO MEMBERS (id, password, name, email, phone, grade) VALUES (?,?,?,?,?,?)";
-        jdbcTemplate.update(sql, member.getId(), member.getPassword(), member.getName(), member.getEmail(), member.getPhone(), member.getGrade().name());
+
+        //MEMBERS 테이블에 저장
+        String sql = "INSERT INTO MEMBERS (id, password, name, email, phone, grade, post_count, comment_count) VALUES (?,?,?,?,?,?,?,?)";
+        jdbcTemplate.update(sql, member.getId(), member.getPassword(), member.getName(), member.getEmail(), member.getPhone(), member.getGrade().name(), member.getPostCount(), member.getCommentCount());
+
     }
 
     @Override
@@ -35,7 +38,9 @@ public class MemoryMemberRepository implements MemberRepository {
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        Grade.valueOf(rs.getString("grade"))
+                        Grade.valueOf(rs.getString("grade")),
+                        rs.getInt("post_count"),
+                        rs.getInt("comment_count")
                 );
             });
         } catch (EmptyResultDataAccessException e) {    //사용자가 존재하지 않을 경우

@@ -36,10 +36,11 @@ public class MemberController {
                            @RequestParam String userPW,
                            @RequestParam String userName,
                            @RequestParam String userEmail,
-                           @RequestParam String userPhone) {
+                           @RequestParam String userPhone,
+                           RedirectAttributes redirectAttributes) {
 
-        //폼에 입력된 정보로 멤버 객체 생성 후 저장
-        Member newMember = new Member(userID, userPW, userName, userEmail, userPhone, Grade.BASIC);
+        //폼에 입력된 정보로 멤버 객체 생성 후 저장 (게시글 수는 default 값인 0)
+        Member newMember = new Member(userID, userPW, userName, userEmail, userPhone, Grade.BASIC, 0, 0);
         memberService.saveMember(newMember);
 
         return "redirect:/";
