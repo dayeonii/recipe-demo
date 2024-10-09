@@ -1,13 +1,12 @@
 package com.example.recipe.controller;
 
 import com.example.recipe.member.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /*
@@ -79,36 +78,78 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String userID, @RequestParam String userPW, RedirectAttributes redirectAttributes) {
-
-        Member member = memoryMemberRepository.findById(userID);    //사용자 조회
+    public String login(@RequestParam String userID, @RequestParam String userPW, HttpSession session, RedirectAttributes redirectAttributes) {
+        Member member = memoryMemberRepository.findById(userID); // 사용자 조회
 
         if (member != null && member.getPassword().equals(userPW)) {
-            redirectAttributes.addFlashAttribute("currentUser", member);    //현재 사용자 정보 저장
+            session.setAttribute("currentUser", member); // 세션에 현재 사용자 정보 저장
             return "redirect:/myinfo";
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 틀립니다.");
             return "redirect:/login";
         }
-
     }
+
 
     /***********************
      * 내 정보 확인 로직 처리
      * ***********************/
 
     @GetMapping("/myinfo")
-    public String showMyInfoForm(Model model) {
-        return "myinfo";
+    public String showMyInfoForm(Model model, @SessionAttribute(name = "currentUser", required = false) Member currentUser) {
+        if (currentUser != null) {
+            model.addAttribute("currentUser", currentUser);
+            return "myinfo";
+        } else {
+            // 사용자 정보가 없으면 로그인 페이지로 리다이렉트
+            return "redirect:/login";
+        }
     }
+
 
     /********************
      * 로그아웃 로직 처리
      * ******************/
 
     @PostMapping("/logout")
-    public String logout(RedirectAttributes redirectAttributes) {
+    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
+        //세션에서 사용자 정보 제거
+        session.invalidate();
+
         redirectAttributes.addFlashAttribute("logoutMessage", "로그아웃 되었습니다");
         return "redirect:/login";
     }
+
+    /**********************
+    * 테스트용 버튼 로직 처리
+    * *********************/
+
+    //게시글 증가 버튼 누르면 호출
+    @PostMapping("/increase-post-count")
+    @ResponseBody
+    public ResponseEntity<Void> incresePostCount(@RequestParam String userID) {
+        Member member =memoryMemberRepository.findById(userID);
+
+        if (member != null) {
+            member.setPostCount(member.getPostCount() + 1);
+            memoryMemberRepository.save(member);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    //댓글 증가 버튼 누르면 호출
+    @PostMapping("/increase-comment-count")
+    @ResponseBody
+    public ResponseEntity<Void> increseCommentCount(@RequestParam String userID) {
+        Member member =memoryMemberRepository.findById(userID);
+
+        if (member != null) {
+            member.setPostCount(member.getCommentCount() + 1);
+            memoryMemberRepository.save(member);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }
