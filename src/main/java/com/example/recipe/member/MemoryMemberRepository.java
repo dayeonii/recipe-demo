@@ -1,6 +1,7 @@
 package com.example.recipe.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,24 @@ public class MemoryMemberRepository implements MemberRepository {
 
     @Override
     public Member findById(String memberID) {
-        return null;
+
+        String sql = "SELECT * FROM MEMBERS WHERE id = ?";  //사용자 존재 여부 쿼리
+
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[]{memberID}, (rs, rowNum) -> {
+                return new Member(
+                        rs.getString("id"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        Grade.valueOf(rs.getString("grade"))
+                );
+            });
+        } catch (EmptyResultDataAccessException e) {    //사용자가 존재하지 않을 경우
+            return null;
+        }
+
+
     }
 }

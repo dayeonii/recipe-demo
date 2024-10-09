@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Infomation Page</title>
+    <title>My Information Page</title>
 </head>
 <body>
-현재 자신의 정보를 확인할 수 있는 페이지입니다.
+<h2>내 정보</h2>
+<div>
+    <p>아이디: <span th:text="${currentUser.id}"></span></p>
+    <p>이름: <span th:text="${currentUser.name}"></span></p>
+    <p>이메일: <span th:text="${currentUser.email}"></span></p>
+    <p>전화번호: <span th:text="${currentUser.phone}"></span></p>
+    <p>등급: <span th:text="${currentUser.grade}"></span></p>
+</div>
+
+<form action="/logout" method="post">
+    <button type="submit">로그아웃</button>
+</form>
+
+<div th:if="${logoutMessage}" style="color: green;">
+    <p th:text="${logoutMessage}"></p>
+</div>
 </body>
 </html>
