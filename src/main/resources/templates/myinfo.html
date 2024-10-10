@@ -26,6 +26,12 @@
     <input type="hidden" name="userId" value="${currentUser.id}" />
     <button type="submit">댓글 수 증가</button>
 </form>
+<div th:if="${message}" style="color: green;">
+    <p th:text="${message}"></p>
+</div>
+<div th:if="${errorMessage}" style="color: red;">
+    <p th:text="${errorMessage}"></p>
+</div>
 
 
 <form action="/logout" method="post">

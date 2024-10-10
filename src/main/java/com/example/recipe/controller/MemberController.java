@@ -126,30 +126,34 @@ public class MemberController {
 
     //게시글 증가 버튼 누르면 호출
     @PostMapping("/increase-post-count")
-    @ResponseBody
-    public ResponseEntity<Void> incresePostCount(@RequestParam String userID) {
+    public String incresePostCount(@RequestParam String userID, RedirectAttributes redirectAttributes) {
         Member member =memoryMemberRepository.findById(userID);
 
         if (member != null) {
             member.setPostCount(member.getPostCount() + 1);
+            memberService.updateMemberGreade(member);
             memoryMemberRepository.save(member);
-            return ResponseEntity.ok().build();
+            redirectAttributes.addFlashAttribute("message", "게시글 수가 증가했습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
         }
-        return ResponseEntity.notFound().build();
+
+        return "redirect:/myinfo";
     }
 
     //댓글 증가 버튼 누르면 호출
     @PostMapping("/increase-comment-count")
-    @ResponseBody
-    public ResponseEntity<Void> increseCommentCount(@RequestParam String userID) {
-        Member member =memoryMemberRepository.findById(userID);
-
+    public String increaseCommentCount(@RequestParam String userID, RedirectAttributes redirectAttributes) {
+        Member member = memoryMemberRepository.findById(userID);
         if (member != null) {
-            member.setPostCount(member.getCommentCount() + 1);
+            member.setCommentCount(member.getCommentCount() + 1);
+            memberService.updateMemberGreade(member); // 등급 업데이트
             memoryMemberRepository.save(member);
-            return ResponseEntity.ok().build();
+            redirectAttributes.addFlashAttribute("message", "댓글 수가 증가했습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
         }
-        return ResponseEntity.notFound().build();
+        return "redirect:/myinfo"; // 리다이렉트
     }
 
 }
