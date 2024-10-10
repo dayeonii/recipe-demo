@@ -3,6 +3,7 @@ package com.example.recipe.controller;
 import com.example.recipe.member.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -126,34 +127,49 @@ public class MemberController {
 
     //게시글 증가 버튼 누르면 호출
     @PostMapping("/increase-post-count")
-    public String incresePostCount(@RequestParam String userID, RedirectAttributes redirectAttributes) {
-        Member member =memoryMemberRepository.findById(userID);
+    public String increasePostCount(HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            Member currentUser = (Member) session.getAttribute("currentUser");
 
-        if (member != null) {
-            member.setPostCount(member.getPostCount() + 1);
-            memberService.updateMemberGreade(member);
-            memoryMemberRepository.save(member);
-            redirectAttributes.addFlashAttribute("message", "게시글 수가 증가했습니다.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
+            if (currentUser != null) {
+                currentUser.setPostCount(currentUser.getPostCount() + 1);
+                memberService.updateMemberGreade(currentUser);
+                memoryMemberRepository.save(currentUser);
+                redirectAttributes.addFlashAttribute("message", "게시글 수가 증가했습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
+            }
+
+            return "redirect:/myinfo";
+        } catch (Exception e) {
+            // 로그 남기기
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "게시글 수 증가 중 오류가 발생했습니다.");
+            return "redirect:/myinfo"; // 오류 발생 시에도 myinfo 페이지로 리다이렉트
         }
-
-        return "redirect:/myinfo";
     }
+
 
     //댓글 증가 버튼 누르면 호출
     @PostMapping("/increase-comment-count")
-    public String increaseCommentCount(@RequestParam String userID, RedirectAttributes redirectAttributes) {
-        Member member = memoryMemberRepository.findById(userID);
-        if (member != null) {
-            member.setCommentCount(member.getCommentCount() + 1);
-            memberService.updateMemberGreade(member); // 등급 업데이트
-            memoryMemberRepository.save(member);
-            redirectAttributes.addFlashAttribute("message", "댓글 수가 증가했습니다.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
+    public String increaseCommentCount(HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            Member currentUser = (Member) session.getAttribute("currentUser");
+            if (currentUser != null) {
+                currentUser.setCommentCount(currentUser.getCommentCount() + 1);
+                memberService.updateMemberGreade(currentUser); // 등급 업데이트
+                memoryMemberRepository.save(currentUser);
+                redirectAttributes.addFlashAttribute("message", "댓글 수가 증가했습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "사용자를 찾을 수 없습니다.");
+            }
+            return "redirect:/myinfo"; // 리다이렉트
+        } catch (Exception e) {
+            // 로그 남기기
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "게시글 수 증가 중 오류가 발생했습니다.");
+            return "redirect:/myinfo"; // 오류 발생 시에도 myinfo 페이지로 리다이렉트
         }
-        return "redirect:/myinfo"; // 리다이렉트
     }
 
 }

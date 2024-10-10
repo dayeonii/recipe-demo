@@ -18,12 +18,12 @@
 
 <!-- 테스트용 게시글 수, 댓글 수 증가 버튼 -->
 <form action="/increase-post-count" method="post">
-    <input type="hidden" name="userId" value="${currentUser.id}" />
+    <input type="hidden" name="userID" value="${currentUser.id}" />
     <button type="submit">게시글 수 증가</button>
 </form>
 
 <form action="/increase-comment-count" method="post">
-    <input type="hidden" name="userId" value="${currentUser.id}" />
+    <input type="hidden" name="userID" value="${currentUser.id}" />
     <button type="submit">댓글 수 증가</button>
 </form>
 <div th:if="${message}" style="color: green;">

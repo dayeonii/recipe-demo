@@ -1,5 +1,6 @@
 package com.example.recipe.member;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ public class MemberService {
     * 사용자 등급 업데이트 로직 - 게시글 수, 댓글 수가 변경될때마다 호출
     * **********************************************************/
 
+    @Transactional
     public void updateMemberGreade(Member member) {
         Grade newGrade = member.getGrade();
 
@@ -41,12 +43,14 @@ public class MemberService {
     }
 
     //게시글 수 증가
+    @Transactional
     public void increasePostCount(Member member) {
         member.setCommentCount(member.getCommentCount() + 1);
         updateMemberGreade(member);
     }
 
     //댓글 수 증가
+    @Transactional
     public void increaseCommentCount(Member member) {
         member.setCommentCount(member.getCommentCount() + 1);
         updateMemberGreade(member);

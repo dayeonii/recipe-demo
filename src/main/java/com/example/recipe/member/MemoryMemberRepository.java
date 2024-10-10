@@ -18,10 +18,20 @@ public class MemoryMemberRepository implements MemberRepository {
     //Member 객체로부터 정보를 불러와서 sql 쿼리에 변수 적용 후 쿼리 요청으로 사용자 저장
     @Override
     public void save(Member member) {
+        //신규 멤버인지 확인
+        String checkSql = "SELECT COUNT(*) FROM MEMBERS WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, new Object[]{member.getId()}, Integer.class);
 
-        //MEMBERS 테이블에 저장
-        String sql = "INSERT INTO MEMBERS (id, password, name, email, phone, grade, post_count, comment_count) VALUES (?,?,?,?,?,?,?,?)";
-        jdbcTemplate.update(sql, member.getId(), member.getPassword(), member.getName(), member.getEmail(), member.getPhone(), member.getGrade().name(), member.getPostCount(), member.getCommentCount());
+        if (count != null && count > 0) {
+            // 기존 사용자가 있을 경우 UPDATE 수행
+            String sql = "UPDATE MEMBERS SET password = ?, name = ?, email = ?, phone = ?, grade = ?, post_count = ?, comment_count = ? WHERE id = ?";
+            jdbcTemplate.update(sql, member.getPassword(), member.getName(), member.getEmail(), member.getPhone(), member.getGrade().name(), member.getPostCount(), member.getCommentCount(), member.getId());
+        } else {
+            //MEMBERS 테이블에 신규 저장
+            String sql = "INSERT INTO MEMBERS (id, password, name, email, phone, grade, post_count, comment_count) VALUES (?,?,?,?,?,?,?,?)";
+            jdbcTemplate.update(sql, member.getId(), member.getPassword(), member.getName(), member.getEmail(), member.getPhone(), member.getGrade().name(), member.getPostCount(), member.getCommentCount());
+
+        }
 
     }
 
