@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/styles.css">
     <!-- jQuery 추가: jQuery 라이브러리를 먼저 로드 : 아이디 중복 확인, 비밀번호 일치 여부 JS를 위한.. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="scripts.js" defer></script>
 </head>
 
 <body>
@@ -53,37 +54,6 @@
         <button type="submit">회원가입하기</button>
     </div>
 </form>
-
-<!-- JavaScript -->
-<script>
-    $(document).ready(function() {
-        $('#checkIdBtn').on('click', function() {
-            const userID = $('#userID').val();
-            if (userID) {   //필드에 뭐라도 적은 상태면 아래 로직으로 중복 체크
-                $.get('/check-duplicate-id', {userID: userID}, function(response) {
-                    if (response) {
-                        $('#idCheckMessage').text('사용 가능한 아이디입니다.');
-                    } else {
-                        $('#idCheckMessage').text('이미 사용 중인 아이디입니다.').css('color','red');
-                    }
-                });
-            } else {    //빈 칸인 상태로 누를 경우 팝업창 띄우기
-                alert('아이디를 입력해 주세요.');
-            }
-        });
-
-        $('#confirmuserPW').on('input', function() {
-            const userPW = $('#userPW').val();
-            const confirmPW = $(this).val();
-
-            if (userPW !== confirmPW) {
-                $('#pwErrorMessage').text('비밀번호가 일치하지 않습니다.');
-            } else {
-                $('#pwErrorMessage').text('');  //일치하면 메세지 안 띄우게 공백
-            }
-        });
-    });
-</script>
 
 </body>
 </html>
