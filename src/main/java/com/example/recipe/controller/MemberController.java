@@ -3,8 +3,6 @@ package com.example.recipe.controller;
 import com.example.recipe.member.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -80,27 +78,28 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(@RequestParam String userID, @RequestParam String userPW, HttpSession session, RedirectAttributes redirectAttributes) {
-        Member member = memoryMemberRepository.findById(userID); // 사용자 조회
+        Member member = memoryMemberRepository.findById(userID); // 데이터베이스에서 사용자 조회
 
         if (member != null && member.getPassword().equals(userPW)) {
-            session.setAttribute("currentUser", member); // 세션에 현재 사용자 정보 저장
-            return "redirect:/myinfo";
+            session.setAttribute("currentUser", member); // 세션에 사용자 정보 저장
+            return "redirect:/mypage"; // 로그인 성공 시 mypage 페이지로 이동
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 틀립니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 틀립니다."); // 로그인 실패 시 메시지 출력
             return "redirect:/login";
         }
     }
+
 
 
     /***********************
      * 내 정보 확인 로직 처리
      * ***********************/
 
-    @GetMapping("/myinfo")
+    @GetMapping("/mypage")
     public String showMyInfoForm(Model model, @SessionAttribute(name = "currentUser", required = false) Member currentUser) {
         if (currentUser != null) {
             model.addAttribute("currentUser", currentUser);
-            return "myinfo";
+            return "mypage";
         } else {
             // 사용자 정보가 없으면 로그인 페이지로 리다이렉트
             return "redirect:/login";
